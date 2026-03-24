@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>令和8年3月 管理職会議ダッシュボード</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --accent: #2563eb;
+      --danger: #b91c1c;
+      --warn: #b45309;
+      --ok: #15803d;
+      --focus: #0f766e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    .container {
+      width: min(1280px, 92vw);
+      margin: 0 auto;
+      padding: 24px 0 64px;
+    }
+
+    .header {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 24px 28px;
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3, h4 { margin: 0 0 8px; line-height: 1.35; }
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.35rem; margin-bottom: 14px; }
+    h3 { font-size: 1.05rem; }
+    h4 { font-size: 0.95rem; color: var(--muted); }
+
+    .sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 8px;
+    }
+
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .nav a {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.9rem;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    .section {
+      margin-top: 18px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .kpi {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .kpi .label { color: var(--muted); font-size: 0.85rem; }
+    .kpi .value { font-size: 1.45rem; font-weight: 700; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .danger { color: var(--danger); }
+    .warn { color: var(--warn); }
+    .ok { color: var(--ok); }
+
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-warn { background: #fef3c7; color: #92400e; }
+    .badge-ok { background: #dcfce7; color: #166534; }
+
+    ul { margin: 6px 0 0 18px; padding: 0; }
+
+    .chart-wrap {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      background: #fcfdff;
+    }
+
+    .chart-title { font-weight: 700; margin-bottom: 6px; }
+    .insight {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: #f8fafc;
+      border-left: 4px solid var(--focus);
+      font-size: 0.9rem;
+    }
+
+    svg { width: 100%; height: auto; display: block; }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .matrix .cell {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 90px;
+      background: #fff;
+    }
+
+    .cell.red { background: #fef2f2; }
+    .cell.orange { background: #fff7ed; }
+    .cell.green { background: #f0fdf4; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th { background: #f9fafb; }
+
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #eef2ff;
+      color: #3730a3;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .print-note {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+
+    @media print {
+      body { background: #fff; }
+      .container { width: 100%; padding: 0; }
+      .section, .header, .card, .chart-wrap { break-inside: avoid; }
+      .nav { display: none; }
+      a { color: #000; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header" id="top">
+      <h1>令和8年3月 管理職会議ダッシュボード</h1>
+      <div class="sub">対象：令和7年度実績の総括と令和8年度予算達成計画（会議日：令和8年3月24日）</div>
+      <nav class="nav">
+        <a href="#summary">全体サマリー</a>
+        <a href="#numbers">数値可視化</a>
+        <a href="#tokuyo">特養深掘り</a>
+        <a href="#ds">デイ深掘り</a>
+        <a href="#referral">紹介率・営業導線</a>
+        <a href="#event">行事・運営接続</a>
+        <a href="#action">会議アクション</a>
+      </nav>
+    </header>
+
+    <section class="section" id="summary">
+      <h2>1. トップ画面 / 全体サマリー（最初の1分）</h2>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>重要論点トップ5</h3>
+          <ol>
+            <li>特養本入所稼働率の低迷（86.9%）</li>
+            <li>DS利用者純減（新規12 < 終了28）</li>
+            <li>法人紹介率27%で流入不足</li>
+            <li>加算の取りこぼしによる単価低下</li>
+            <li>行事準備と通常運営の両立リスク</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3>最重要リスク <span class="badge badge-danger">緊急</span></h3>
+          <p><strong>本入所稼働の未達をショート稼働で見えにくくしている構造。</strong><br>中長期の売上基盤が弱く、空床の長期化が継続する恐れ。</p>
+          <h3 style="margin-top:12px;">最大ボトルネック</h3>
+          <p>退所・入院の予測〜補充設計が後追い運用になっており、先行確保が機能していない。</p>
+        </div>
+        <div class="card">
+          <h3>今回の会議で決めるべきこと</h3>
+          <ul>
+            <li>特養：退所予測ベースの補充KPI（週次管理）</li>
+            <li>DS：見学→契約転換率の目標値と責任者</li>
+            <li>紹介：法人紹介率の目標（27%→35%等）と倫理ガード</li>
+            <li>行事：秋祭り準備の人員配分ルール</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid grid-3" style="margin-top:12px;">
+        <div class="card kpi"><span class="label">特養（ホーム）</span><span class="value danger">本入所86.9%</span><span>ショート107.4%で補完。構造改善が必要。</span></div>
+        <div class="card kpi"><span class="label">デイサービス（ホーム）</span><span class="value warn">平均69.5%</span><span>利用者純減 + 加算不足で収益押下。</span></div>
+        <div class="card kpi"><span class="label">紹介率（法人）</span><span class="value warn">27%</span><span>流入設計が弱く稼働率に波及。</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="numbers">
+      <h2>2. 数値可視化セクション</h2>
+      <div class="grid grid-2">
+        <div class="chart-wrap">
+          <div class="chart-title">売上 予算比（令和7年度2月）</div>
+          <svg id="salesChart" viewBox="0 0 620 300" role="img" aria-label="売上予算比"></svg>
+          <div class="insight">ホーム特養・DS・さくらDSの未達が大きく、左近山居宅・ホームSS・三幸GHが部分補填。未達事業の構造対策がないと通期改善は困難。</div>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-title">稼働率比較（目標 vs 実績）</div>
+          <svg id="occChart" viewBox="0 0 620 300" role="img" aria-label="稼働率比較"></svg>
+          <div class="insight">特養本入所とDSの差分が主な経営課題。ショートの高稼働は一時的な埋め草で、本体課題を代替できない。</div>
+        </div>
+
+        <div class="chart-wrap">
+          <div class="chart-title">特養：本入所 vs 短期（ショート）</div>
+          <svg id="tokuyoSplit" viewBox="0 0 620 260" role="img" aria-label="特養本入所短期比較"></svg>
+          <div class="insight">短期107.4%が目立つ一方、本入所86.9%は深刻。長期収益の基盤である本入所の立て直しが優先。</div>
+        </div>
+
+        <div class="chart-wrap">
+          <div class="chart-title">DS月別稼働率推移（かわしまホーム）</div>
+          <svg id="dsTrend" viewBox="0 0 620 260" role="img" aria-label="DS月次推移"></svg>
+          <div class="insight">4月75.6%→3月62.7%へ低下。季節要因よりも、継続的な新規獲得不足・終了超過の構造問題が示唆される。</div>
+        </div>
+
+        <div class="chart-wrap">
+          <div class="chart-title">紹介率推移（担当者別）</div>
+          <svg id="refTrend" viewBox="0 0 620 260" role="img" aria-label="紹介率推移"></svg>
+          <div class="insight">担当者間でばらつきが大きく、組織として再現性が低い。紹介プロセス標準化と進捗モニタリングが必要。</div>
+        </div>
+
+        <div class="chart-wrap">
+          <div class="chart-title">優先度マトリクス（影響度 × 緊急度）</div>
+          <div class="matrix">
+            <div class="cell red"><strong>高影響 × 高緊急</strong><br>特養本入所補充設計<br>DS流入回復（新規>終了）</div>
+            <div class="cell orange"><strong>高影響 × 中緊急</strong><br>紹介率標準化<br>加算取得ルール徹底</div>
+            <div class="cell orange"><strong>中影響 × 高緊急</strong><br>行事による人員逼迫回避<br>平日稼働の偏り是正</div>
+            <div class="cell green"><strong>中影響 × 中緊急</strong><br>成功事例の横展開<br>定例レビュー運用</div>
+          </div>
+          <div class="insight">「高影響×高緊急」に会議時間を集中配分し、決定事項をKPI化することが最も費用対効果が高い。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="tokuyo">
+      <h2>3. 特養 深掘り（本入所の構造課題）</h2>
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th>問題</th><th>原因</th><th>影響</th><th>対応案（会議決定事項候補）</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>本入所稼働率が86.9%で目標97.9%を大幅未達</td>
+              <td>退所・入院予測が遅く、補充の先行着手が不足</td>
+              <td>長期ベッド収益が毀損し、月次売上未達を固定化</td>
+              <td>「退所予測30日先」運用を開始し、週次で待機者・面談・判定件数を管理</td>
+            </tr>
+            <tr>
+              <td>短期107.4%で全体値を補っている</td>
+              <td>本入所の空床を短期利用で埋める運用が常態化</td>
+              <td>見かけ上の稼働は維持されるが、基盤収益が不安定</td>
+              <td>「短期→本入所転換候補（ロングショート常時10名）」をKPI化</td>
+            </tr>
+            <tr>
+              <td>空床発生後対応になっている</td>
+              <td>多職種連携のタイミングと責任分担が曖昧</td>
+              <td>空床日数増加、入所調整遅延、職員負荷増大</td>
+              <td>入退院カンファを定例化し、受入可否判断を48時間以内に統一</td>
+            </tr>
+            <tr>
+              <td>営業不足だけでなく予測精度の問題</td>
+              <td>医療連携・居宅連携データの活用が弱い</td>
+              <td>候補者パイプラインが薄く、繁閑差が拡大</td>
+              <td>医療機関・居宅別の紹介実績と成約率を可視化し重点先を再設定</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="print-note">ポイント：ショート好調は「安心材料」ではなく「本体弱化の警報」。本入所回復を最優先で意思決定する。</div>
+    </section>
+
+    <section class="section" id="ds">
+      <h2>4. デイサービス 深掘り（利用者純減と収益未達）</h2>
+      <div class="card">
+        <table>
+          <thead>
+            <tr><th>問題</th><th>原因</th><th>影響</th><th>対応案（会議決定事項候補）</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>利用者が純減（新規12 / 終了28）</td>
+              <td>見学→契約転換率が低く、終了予兆管理が不十分</td>
+              <td>月次稼働率が低下し売上未達が継続</td>
+              <td>見学から7日以内フォロー必須化、転換率KPIを担当者別に設定</td>
+            </tr>
+            <tr>
+              <td>稼働率平均69.5%（目標86%未達）</td>
+              <td>曜日別の定員割れ常態化、平日枠の営業弱さ</td>
+              <td>固定費を吸収できず利益率悪化</td>
+              <td>曜日別不足数を週次公開し、利用日変更提案をルール化</td>
+            </tr>
+            <tr>
+              <td>加算取得の取りこぼし</td>
+              <td>口腔・栄養アセスメント等の業務運用が未整備</td>
+              <td>単価低下により稼働改善効果を相殺</td>
+              <td>加算取得チェックリストを標準化し、月末監査を実施</td>
+            </tr>
+            <tr>
+              <td>活動が数字に直結していない</td>
+              <td>プログラム訴求と営業導線が分断</td>
+              <td>差別化価値が伝わらず契約に至らない</td>
+              <td>「活動実績→成果→利用者メリット」の営業資料を統一配布</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" id="referral">
+      <h2>5. 紹介率・営業導線（稼働率を支える入口設計）</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>現状の課題</h3>
+          <ul>
+            <li>法人紹介率は27%で、稼働率改善に対して弱い水準。</li>
+            <li>担当者間の差（例：11.1%〜26.0%）が大きく、標準化不足。</li>
+            <li>紹介先がショート等に偏在し、一般DSや特養への導線が弱い。</li>
+            <li>紹介率向上施策は利用者本位を損なわない倫理ガードが必要。</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>会議で決めるべき設計</h3>
+          <ul>
+            <li>紹介率目標を段階設定（例：27%→30%→35%）。</li>
+            <li>「適正紹介」判定を定義（ニーズ適合・同意取得・選択肢提示）。</li>
+            <li>居宅→各サービスの成約率を月次で可視化。</li>
+            <li>低調導線（DS平日・特養本入所）を重点改善ラインに指定。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="event">
+      <h2>6. 行事・運営接続（秋祭りを単発で終わらせない）</h2>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>想定負荷</h3>
+          <p>行事準備により、DS受入・入所調整・営業訪問の工数が圧迫される懸念。</p>
+          <span class="pill">人員逼迫リスク</span>
+        </div>
+        <div class="card">
+          <h3>接続の視点</h3>
+          <p>秋祭りを見学導線・家族接点・地域連携に接続し、行事を流入施策へ転換する。</p>
+          <span class="pill">営業機会化</span>
+        </div>
+        <div class="card">
+          <h3>必要な運用</h3>
+          <p>行事前後2週間のKPI（見学件数・体験利用・紹介件数）を設定し、効果検証まで実施。</p>
+          <span class="pill">効果測定必須</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="action">
+      <h2>7. 会議アクション欄</h2>
+      <div class="action-grid">
+        <div class="card">
+          <h3>今すぐ決めること</h3>
+          <ul>
+            <li>特養補充KPI（30日先予測・週次レビュー）</li>
+            <li>DS転換率KPI（見学→契約）</li>
+            <li>紹介率目標と倫理ガードライン</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>持ち帰り課題</h3>
+          <ul>
+            <li>平日稼働率改善の施設別施策</li>
+            <li>加算取得漏れの業務設計</li>
+            <li>成功GHノウハウの横展開計画</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>次回までの確認事項（4/28）</h3>
+          <ul>
+            <li>特養空床日数の推移</li>
+            <li>DS新規・終了差分の改善有無</li>
+            <li>紹介率の担当者別改善度</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>追加で必要な資料</h3>
+          <ul>
+            <li>R8年4月以降の年間行事予定</li>
+            <li>見学→契約ファネル詳細</li>
+            <li>退所・入院予測の根拠データ</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>誰に何を確認するか</h3>
+          <ul>
+            <li>施設長：特養補充体制と責任分担</li>
+            <li>DS責任者：転換率向上の実行計画</li>
+            <li>居宅管理者：紹介標準化と倫理運用</li>
+            <li>事務長：行事期の人員・コスト配分</li>
+          </ul>
+        </div>
+      </div>
+      <div class="print-note">このダッシュボードは、売上・稼働・紹介・行事運営を単一画面で接続し、「問題→原因→影響→対応」を会議で意思決定できる形に再構成したものです。</div>
+    </section>
+  </div>
+
+  <script>
+    const salesData = [
+      { name: "ホーム特養", ratio: -9.4 },
+      { name: "ホームSS", ratio: 21.5 },
+      { name: "ホームDS", ratio: -19.5 },
+      { name: "さくらDS", ratio: -60.2 },
+      { name: "左近山DS", ratio: -5.8 },
+      { name: "左近山居宅", ratio: 45.5 },
+      { name: "三幸GH", ratio: 16.9 }
+    ];
+
+    const occData = [
+      { name: "特養全体", target: 97.6, actual: 91.4 },
+      { name: "本入所", target: 97.9, actual: 86.9 },
+      { name: "短期", target: 95.0, actual: 107.4 },
+      { name: "DS(目標86)", target: 86.0, actual: 69.5 }
+    ];
+
+    const dsData = [75.6, 73.8, 72.2, 71.1, 70.5, 69.7, 69.1, 68.8, 68.3, 67.4, 65.0, 62.7];
+    const refA = [20.6, 21.8, 22.5, 23.1, 24.0, 25.0, 26.0, 25.2, 24.8, 24.3, 23.8, 23.8];
+    const refB = [11.1, 12.0, 13.5, 14.1, 15.4, 17.2, 18.6, 20.2, 22.1, 24.5, 20.0, 17.9];
+    const months = ["4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月", "1月", "2月", "3月"];
+
+    function text(svg, x, y, str, cls = "") {
+      const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      t.setAttribute("x", x); t.setAttribute("y", y);
+      if (cls) t.setAttribute("class", cls);
+      t.setAttribute("font-size", "12");
+      t.setAttribute("fill", "#374151");
+      t.textContent = str;
+      svg.appendChild(t);
+    }
+
+    function line(svg, x1, y1, x2, y2, color = "#d1d5db", width = 1) {
+      const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      l.setAttribute("x1", x1); l.setAttribute("y1", y1);
+      l.setAttribute("x2", x2); l.setAttribute("y2", y2);
+      l.setAttribute("stroke", color); l.setAttribute("stroke-width", width);
+      svg.appendChild(l);
+    }
+
+    function rect(svg, x, y, w, h, color) {
+      const r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      r.setAttribute("x", x); r.setAttribute("y", y);
+      r.setAttribute("width", w); r.setAttribute("height", h);
+      r.setAttribute("fill", color);
+      svg.appendChild(r);
+    }
+
+    function polyline(svg, pts, color) {
+      const p = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+      p.setAttribute("points", pts.map(([x, y]) => `${x},${y}`).join(" "));
+      p.setAttribute("fill", "none");
+      p.setAttribute("stroke", color);
+      p.setAttribute("stroke-width", "3");
+      svg.appendChild(p);
+    }
+
+    function drawSalesChart() {
+      const svg = document.getElementById("salesChart");
+      const w = 620, h = 300, left = 90, right = 20, top = 20, bottom = 45;
+      const innerW = w - left - right, innerH = h - top - bottom;
+      const min = -65, max = 50;
+      const zeroY = top + ((max - 0) / (max - min)) * innerH;
+
+      line(svg, left, top, left, h - bottom, "#9ca3af", 1);
+      line(svg, left, zeroY, w - right, zeroY, "#9ca3af", 1.5);
+
+      salesData.forEach((d, i) => {
+        const bw = innerW / salesData.length * 0.68;
+        const x = left + i * (innerW / salesData.length) + (innerW / salesData.length - bw) / 2;
+        const y = top + ((max - Math.max(d.ratio, 0)) / (max - min)) * innerH;
+        const y2 = top + ((max - Math.min(d.ratio, 0)) / (max - min)) * innerH;
+        rect(svg, x, y, bw, Math.max(2, y2 - y), d.ratio >= 0 ? "#16a34a" : "#dc2626");
+        text(svg, x + bw / 2 - 18, h - 20, d.name);
+        text(svg, x + bw / 2 - 18, d.ratio >= 0 ? y - 6 : y2 + 14, `${d.ratio}%`);
+      });
+    }
+
+    function drawOccChart() {
+      const svg = document.getElementById("occChart");
+      const w = 620, h = 300, left = 80, right = 20, top = 20, bottom = 50;
+      const innerW = w - left - right, innerH = h - top - bottom;
+      const max = 115;
+
+      line(svg, left, top, left, h - bottom, "#9ca3af");
+      line(svg, left, h - bottom, w - right, h - bottom, "#9ca3af");
+
+      occData.forEach((d, i) => {
+        const groupW = innerW / occData.length;
+        const bw = groupW * 0.28;
+        const x1 = left + i * groupW + groupW * 0.2;
+        const x2 = x1 + bw + 10;
+        const y1 = top + (1 - d.target / max) * innerH;
+        const y2 = top + (1 - d.actual / max) * innerH;
+        rect(svg, x1, y1, bw, h - bottom - y1, "#93c5fd");
+        rect(svg, x2, y2, bw, h - bottom - y2, d.actual < d.target ? "#ef4444" : "#22c55e");
+        text(svg, x1 - 6, h - 28, d.name);
+        text(svg, x1, y1 - 4, `${d.target}%`);
+        text(svg, x2, y2 - 4, `${d.actual}%`);
+      });
+      text(svg, 430, 24, "■目標", ""); rect(svg, 410, 14, 12, 12, "#93c5fd");
+      text(svg, 495, 24, "■実績", ""); rect(svg, 475, 14, 12, 12, "#ef4444");
+    }
+
+    function drawTokuyoSplit() {
+      const svg = document.getElementById("tokuyoSplit");
+      const bars = [
+        { name: "本入所", value: 86.9, color: "#dc2626" },
+        { name: "短期", value: 107.4, color: "#16a34a" },
+        { name: "全体", value: 91.4, color: "#f59e0b" }
+      ];
+      const left = 90, top = 20, width = 500, h = 220;
+      line(svg, left, top, left, h, "#9ca3af");
+      line(svg, left, h, left + width, h, "#9ca3af");
+      bars.forEach((b, i) => {
+        const y = top + i * 62;
+        const w = (b.value / 110) * (width - 40);
+        rect(svg, left + 1, y + 8, w, 30, b.color);
+        text(svg, 20, y + 28, b.name);
+        text(svg, left + w + 8, y + 28, `${b.value}%`);
+      });
+      text(svg, left + 420, 18, "基準110%", "");
+    }
+
+    function drawLineChart(svgId, data1, data2 = null, min = 0, max = 100, color1 = "#2563eb", color2 = "#dc2626") {
+      const svg = document.getElementById(svgId);
+      const w = 620, h = 260, left = 48, right = 16, top = 18, bottom = 42;
+      const innerW = w - left - right, innerH = h - top - bottom;
+
+      line(svg, left, top, left, h - bottom, "#9ca3af");
+      line(svg, left, h - bottom, w - right, h - bottom, "#9ca3af");
+
+      const points1 = data1.map((v, i) => {
+        const x = left + i * (innerW / (data1.length - 1));
+        const y = top + ((max - v) / (max - min)) * innerH;
+        return [x, y];
+      });
+      polyline(svg, points1, color1);
+
+      points1.forEach((p, i) => {
+        rect(svg, p[0] - 2, p[1] - 2, 4, 4, color1);
+        if (i % 2 === 0 || i === data1.length - 1) text(svg, p[0] - 10, h - 24, months[i]);
+      });
+
+      if (data2) {
+        const points2 = data2.map((v, i) => {
+          const x = left + i * (innerW / (data2.length - 1));
+          const y = top + ((max - v) / (max - min)) * innerH;
+          return [x, y];
+        });
+        polyline(svg, points2, color2);
+        points2.forEach((p) => rect(svg, p[0] - 2, p[1] - 2, 4, 4, color2));
+        text(svg, 490, 20, "■系列A"); rect(svg, 470, 10, 12, 12, color1);
+        text(svg, 560, 20, "■系列B"); rect(svg, 540, 10, 12, 12, color2);
+      }
+    }
+
+    drawSalesChart();
+    drawOccChart();
+    drawTokuyoSplit();
+    drawLineChart("dsTrend", dsData, null, 55, 80, "#2563eb");
+    drawLineChart("refTrend", refA, refB, 10, 30, "#0f766e", "#7c3aed");
+  </script>
+</body>
+</html>
